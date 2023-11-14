@@ -116,24 +116,48 @@ public class RNTrackPlayer: RCTEventEmitter, AudioSessionControllerDelegate {
     public func handleInterruption(type: InterruptionType) {
         switch type {
         case .began:
+            pause()
             // Interruption began, take appropriate actions (save state, update user interface)
-            self.sendEvent(withName: "remote-duck", body: [
-                "paused": true
-            ])
+//            self.sendEvent(withName: "remote-duck", body: [
+//                "paused": true
+//            ])
         case let .ended(shouldResume):
             if shouldResume {
+                play()
                 // Interruption Ended - playback should resume
-                self.sendEvent(withName: "remote-duck", body: [
-                    "paused": false
-                ])
+//                self.sendEvent(withName: "remote-duck", body: [
+//                    "paused": false
+//                ])
             } else {
-                // Interruption Ended - playback should NOT resume
-                self.sendEvent(withName: "remote-duck", body: [
-                    "paused": true,
-                    "permanent": true
-                ])
+                pause()
+//                // Interruption Ended - playback should NOT resume
+//                self.sendEvent(withName: "remote-duck", body: [
+//                    "paused": true,
+//                    "permanent": true
+//                ])
             }
         }
+    }
+    
+
+    public func play() {
+        if !hasInitialized {
+            return
+        }
+
+        try? AVAudioSession.sharedInstance().setActive(true)
+        player.play()
+        
+    }
+
+  
+    public func pause() {
+        if !hasInitialized {
+            return
+        }
+
+        player.pause()
+        
     }
 
     // MARK: - Bridged Methods
